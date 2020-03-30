@@ -20,7 +20,7 @@ public class InternationalLoansApp {
                 .master("local[*]")
                 .getOrCreate();
 
-        // spark.sparkContext().setLogLevel("WARN");
+        spark.sparkContext().setLogLevel("WARN");
 
         // Loads CSV file from local directory
         Dataset<Row> dfLoans = spark.read()
@@ -82,6 +82,12 @@ public class InternationalLoansApp {
                 .format("csv")
                 .option("header", "true")
                 .save("build/results/ibrd-summary-small-java");
+
+        dfDisbursement.write().
+                format("com.github.potix2.spark.google.spreadsheets").
+                option("serviceAccountId", "231211187532-compute@developer.gserviceaccount.com").
+                option("credentialPath", "credential.p12").
+                save("1pvUORlpofFGDdMHBufL2vFh4-_9zVz0DO9qgWOrytBM/Sheet2");
 
         System.out.println("Results successfully written to CSV file");
 

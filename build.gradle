@@ -1,9 +1,6 @@
-// Author: Gary A. Stafford
-// Description: Demo of Java for Spark using Google Cloud Dataproc
-// Date: 12-03-2018
-
 plugins {
     id 'java'
+    id 'scala'
 }
 
 group 'org.example.dataproc'
@@ -16,13 +13,16 @@ repositories {
 }
 
 ext {
-    scalaVersion = "2.12"
+    scalaVersion = "2.11"
+    //scalaVersion = "2.12"
     sparkVersion = "2.4.0"
 }
 
 dependencies {
+    implementation "org.scala-lang:scala-library:${scalaVersion}"
     implementation group: 'org.apache.spark', name: "spark-core_${scalaVersion}", version: sparkVersion
     implementation group: 'org.apache.spark', name: "spark-sql_${scalaVersion}", version: sparkVersion
     implementation group: 'com.google.cloud.bigdataoss', name: 'gcs-connector', version: 'hadoop3-1.9.10'
+    implementation 'com.github.potix2:spark-google-spreadsheets_2.11:0.6.3'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
