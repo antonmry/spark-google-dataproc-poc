@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'scala'
+    id 'groovy'
 }
 
 group 'org.example.dataproc'
@@ -19,10 +20,25 @@ ext {
 }
 
 dependencies {
+
+    // Scala
     implementation "org.scala-lang:scala-library:${scalaVersion}"
+
+    // Spark
     implementation group: 'org.apache.spark', name: "spark-core_${scalaVersion}", version: sparkVersion
     implementation group: 'org.apache.spark', name: "spark-sql_${scalaVersion}", version: sparkVersion
-    implementation group: 'com.google.cloud.bigdataoss', name: 'gcs-connector', version: 'hadoop3-1.9.10'
+
+    // Spark Google Sheet
     implementation 'com.github.potix2:spark-google-spreadsheets_2.11:0.6.3'
+
+    // Dataproc
+    implementation group: 'com.google.cloud.bigdataoss', name: 'gcs-connector', version: 'hadoop3-1.9.10'
+
+    // Geb
+    compile "org.gebish:geb-core:3.4"
+    compile "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59"
+    compile "org.seleniumhq.selenium:selenium-support:3.141.59"
+
+    // Testing
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }

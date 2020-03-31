@@ -2,7 +2,9 @@
 .vscode
 .idea/
 build
+out
 bin
 helper/Pipfile
 helper/Pipfile.lock
 *.p12
+PrivateData.groovy
