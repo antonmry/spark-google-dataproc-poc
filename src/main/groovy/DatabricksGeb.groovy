@@ -8,16 +8,15 @@ class DatabricksGeb extends Script {
 
         def organization = login(PrivateData.email, PrivateData.password)
         String clusterName = UUID.randomUUID().toString()
-        clusterName = "89c87aad-cb23-48d3-9060-9e0d5354ed2a"
+        clusterName = "1a0e92e7-2b4a-4745-be31-5a4e5b7289a7"
         //createCluster(clusterName)
         installLibrary("com.github.potix2:spark-google-spreadsheets_2.11:0.6.3", organization, clusterName)
         installLibrary("ch.cern.sparkmeasure:spark-measure_2.12:0.16", organization, clusterName)
-
-        println("Success!")
-
+        //runNotebook(organization, "469897532896452") // covid-coronadatascraper
+        //runNotebook(organization, "2568995183456180") // covid-kaggle
     }
 
-    def login(String email, String password) {
+    String login(String email, String password) {
         return Browser.drive {
 
             go "https://community.cloud.databricks.com/login.html"
@@ -62,14 +61,18 @@ class DatabricksGeb extends Script {
         }
     }
 
-    def installLibrary(String library, String organization, String clusterName) {
+    def installLibrary(String library, String organization) {
 
         Browser.drive {
             go "https://community.cloud.databricks.com/?o=" + organization + "#setting/clusters"
             waitFor(10) { title == "Clusters - Databricks Community Edition" }
 
-            waitFor(20) { $("div", text: clusterName) }
-            $("div", text: clusterName).first().click()
+            driver.navigate().refresh()
+
+            waitFor(300) {
+                $("div", text: "Running")
+            }
+            $("div", text: "Running").click()
 
             waitFor { $("a", text: "Libraries") }
             $("a", text: "Libraries").click()
@@ -98,28 +101,31 @@ class DatabricksGeb extends Script {
         }
     }
 
-    def checkLibrary(String library, String organization, String clusterName) {
+    def runNotebook(String organization, String notebookId) {
 
         Browser.drive {
-            go "https://community.cloud.databricks.com/?o=" + organization + "#setting/clusters"
-            waitFor(10) { title == "Clusters - Databricks Community Edition" }
+            go "https://community.cloud.databricks.com/?o=" + organization + "#notebook/" + notebookId
 
-            waitFor(20) { $("div", text: clusterName) }
-            $("div", text: clusterName).first().click()
+            waitFor(20) { $("a", id: "clear-results-link") }
+            $("a", id: "clear-results-link").click()
 
-            waitFor { $("a", text: "Libraries") }
-            $("a", text: "Libraries").click()
-            Thread.sleep(2000)
+            waitFor() { $("a", text: "Clear Results") }
+            $("a", text: "Clear Results").click()
 
+            waitFor() { $("a", text: "Confirm") }
+            $("a", text: "Confirm").click()
 
-            // <div aria-label="grid" class="ReactVirtualized__Grid ReactVirtualized__Table__Grid row-clickable" role="rowgroup" tabindex="0" style="box-sizing: border-box; direction: ltr; height: 834px; position: relative; width: 902px; will-change: transform; overflow: hidden;">
-            // <div class="ReactVirtualized__Grid__innerScrollContainer" role="rowgroup" style="width: auto; height: 30px; max-width: 902px; max-height: 30px; overflow: hidden; position: relative;">
-            // <div aria-rowindex="1" aria-label="row" tabindex="0" class="ReactVirtualized__Table__row" role="row" style="height: 30px; left: 0px; position: absolute; top: 0px; width: 902px; overflow: hidden; padding-right: 0px;">
-            // <div aria-colindex="1" class="ReactVirtualized__Table__rowColumn" role="gridcell" style="overflow: hidden; flex: 0 1 34px;"><input type="checkbox"></div>
-            // <div aria-colindex="2" class="ReactVirtualized__Table__rowColumn" role="gridcell" title="com.github.potix2:spark-google-spreadsheets_2.11:0.6.3" style="overflow: hidden; flex: 0 1 300px;">com.github.potix2:spark-google-spreadsheets_2.11:0.6.3</div>
-            // <div aria-colindex="3" class="ReactVirtualized__Table__rowColumn" role="gridcell" title="Maven" style="overflow: hidden; flex: 0 1 60px;">Maven</div>
-            // <div aria-colindex="4" class="ReactVirtualized__Table__rowColumn" role="gridcell" style="overflow: hidden; flex: 0 1 180px;"><span class="library-status-wrapper"><i class="library-status status-indicator-icon ok fa fa-fw fa-circle"></i>Installed</span></div>
-            // <div aria-colindex="5" class="ReactVirtualized__Table__rowColumn" role="gridcell" title="" style="overflow: hidden; flex: 1 1 500px;"></div></div></div></div>
+            waitFor(10) { $("a[data-name='Run All']") }
+            $("a[data-name='Run All']").click()
+
+            try {
+                waitFor() { $("a", text: "Attach and Run") }
+                $("a", text: "Attach and Run").click()
+            } catch (geb.waiting.WaitTimeoutException e) {
+                // cluster currently attached
+            }
+
+            waitFor(Double.MAX_VALUE) { $("a[data-name='Run All']") }
         }
     }
 
