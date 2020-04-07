@@ -7,16 +7,16 @@ Create project and activate DataProc API: https://cloud.google.com/dataproc/docs
 Create budget and DataProc cluster:
 
 ```
-gcloud config set project itamarsparkdataproc
+gcloud config set project testsparkdataproc
 gcloud config set dataproc/region europe-west4 
-gsutil mb -l europe-west4 gs://itamarsparkdataproc/
-gcloud dataproc clusters create itamarsparkdataproc-cluster --region=europe-west4 --max-age=7h --single-node --bucket=itamarsparkdataproc
+gsutil mb -l europe-west4 gs://testsparkdataproc/
+gcloud dataproc clusters create testsparkdataproc-cluster --region=europe-west4 --max-age=7h --single-node --bucket=testsparkdataproc
 ```
 
 Upload the file to the bucket:
 
 ```
-gsutil cp data/ibrd-statement-of-loans-latest-available-snapshot.csv gs://itamarsparkdataproc/
+gsutil cp data/ibrd-statement-of-loans-latest-available-snapshot.csv gs://testsparkdataproc/
 ```
 
 Compile the project:
@@ -28,16 +28,16 @@ Compile the project:
 Submit the job:
 
 ```
-gcloud dataproc jobs submit spark --cluster itamarsparkdataproc-cluster  \
+gcloud dataproc jobs submit spark --cluster testsparkdataproc-cluster  \
 --jars build/libs/dataprocJavaDemo-1.0-SNAPSHOT.jar \
 --class org.example.dataproc.InternationalLoansAppDataproc \
--- gs://itamarsparkdataproc ibrd-statement-of-loans-latest-available-snapshot.csv results 
+-- gs://testsparkdataproc ibrd-statement-of-loans-latest-available-snapshot.csv results 
 ```
 
 Check the result:
 
 ```
-gsutil ls gs://itamarsparkdataproc/results/
+gsutil ls gs://testsparkdataproc/results/
 ```
 
 ## Local
